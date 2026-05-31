@@ -1,65 +1,98 @@
-<html>
+<!-- ATTENZIONE PROPRIETA' PRIVATA DI SFRISO PAOLO -->
+
+<!doctype html>
+<html lang="it">
+
 <head>
+    <meta charset="utf-8">
+    <title>Sfriso Diego</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
+
     <style>
-
         body {
-        background-color: #46e1ec; /* colore di sfondo (azzurro) */
-        margin: 0;                 /* rimuove il margine automatico del browser */
-        overflow: hidden;          /* nasconde ciò che esce dallo schermo (niente scrollbar) */
-        height: 100vh;             /* altezza = 100% della finestra visibile */
+            background-color: #46e1ec;
+            margin: 0;
+            overflow-x: hidden;
+            /* Blocca lo sbandamento laterale dei fiori */
+            overflow-y: hidden;
+            height: 100vh;
+            font-family: sans-serif;
         }
 
-        /* . = classe → si applica a più elementi */
+        h1 {
+            font-size: 7vw;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 5vw;
+            margin: 5px 0;
+            color: #555;
+        }
+
+        h3 {
+            font-size: 4vw;
+            margin: 5px 0;
+            color: #777;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 40px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+        }
+
         .fiore {
-            position: absolute;   /* posizione libera */
-            bottom: 20px;         /* 20px dal fondo */
-            width: 80px;          /* dimensione fiore */
-            user-select: none;    /* non selezionabile */
+            position: absolute;
+            bottom: 20px;
+            width: 65px;
+            user-select: none;
         }
 
-        /* # = ID → elemento unico */
         #gatto-fisso {
             position: absolute;
             bottom: 15px;
-            left: 50%;                 /* centro orizzontale */
-            transform: translateX(-50%); /* correzione per centratura perfetta */
-            width: 180px;
-            z-index: 1000;            /* Il gatto è sempre in primo piano */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            z-index: 1000;
         }
 
-        /* Un piccolo tocco estetico: l'erba */
         #pavimento {
             position: absolute;
             bottom: 0;
             width: 100%;
             height: 40px;
-            background-color: #2ecc71; /* Verde prato */
+            background-color: #2ecc71;
         }
-
     </style>
-    
+
     <script>
         const FioriDisponibili = ["fi_0.gif", "fi_1.gif", "fi_2.gif", "fi_3.gif", "fi_4.gif", "fi_5.gif", "fi_6.gif", "fi_7.gif", "fi_8.gif", "fi_9.gif", "fi_10.gif", "fi_11.gif"];
         const GattoImg = "ga_0.gif";
 
         function Start() {
-            // 1. Creiamo il gatto una volta sola
-            let gatto = document.createElement("img"); // Creo un elemento HTML <img> e lo assegno alla variabile gatto (conterrà immagini)
-            gatto.src = GattoImg;     // assegna l'immagine (del file) al gatto
-            gatto.id = "gatto-fisso"; // assegna un ID univoco per CSS e JavaScript
-            document.body.appendChild(gatto); // inserisce il gatto nella pagina tramite appendChild()
+            let gatto = document.createElement("img");
+            gatto.src = GattoImg;
+            gatto.id = "gatto-fisso";
+            document.body.appendChild(gatto);
 
-            // 2. Facciamo partire il ciclo infinito di nascita dei fiori
             generaCicloFiori();
         }
 
         function generaCicloFiori() {
-            // Crea un fiore
             creaSingoloFiore();
-
-            // Decidi quando creare il prossimo
-            // Questo rende il prato naturale e non meccanico
-            let attesa = Math.random() * 100 + 50; 
+            let attesa = Math.random() * 100 + 50;
             setTimeout(generaCicloFiori, attesa);
         }
 
@@ -70,21 +103,17 @@
             f.className = "fiore";
             document.body.appendChild(f);
 
-            // Stato iniziale del singolo fiore
-            let posX = window.innerWidth + 100; // Parte da fuori schermo a destra
-            let velocita = 1 + Math.random() * 2; // Ogni fiore ha la sua velocità
+            let posX = window.innerWidth + 100;
+            let velocita = 1 + Math.random() * 2;
 
-            // Funzione interna per il movimento di QUESTO specifico fiore
             function muoviti() {
                 posX -= velocita;
                 f.style.left = posX + "px";
 
                 if (posX > -150) {
-                    // Se è ancora visibile, continua l'animazione
                     requestAnimationFrame(muoviti);
                 } else {
-                    // Se è uscito a sinistra, lo eliminiamo per pulire la memoria
-                    f.remove(); 
+                    f.remove();
                 }
             }
 
@@ -92,15 +121,19 @@
         }
     </script>
 </head>
+
 <body onload="Start()">
-<center>
-    <h1><br>SFRISO DIEGO<br></h1>
-    <h1>FILIPPO VALENTINA<br></h1>
-    <h1>SFRISO EVA<br></h1>
-    <h2>Via Dante, 78a</h2>
-    <h3>Mirano (ve) Italy</h3>
-</center>
+    <center>
+        <div style="padding-top: 5vh;">
+            <h1>SFRISO DIEGO</h1>
+            <h1>FILIPPO VALENTINA</h1>
+            <h1>SFRISO EVA</h1>
+            <h2>Via Dante, 78A</h2>
+            <h3>Mirano (VE) Italy</h3>
+        </div>
+    </center>
 
     <div id="pavimento"></div>
 </body>
+
 </html>
