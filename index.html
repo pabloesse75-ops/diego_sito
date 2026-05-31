@@ -12,16 +12,23 @@
     <style>
         body {
             background-color: #46e1ec;
+            /* colore di sfondo (azzurro) */
             margin: 0;
+            /* rimuove il margine automatico del browser */
             overflow-x: hidden;
-            /* Blocca lo sbandamento laterale dei fiori */
+            /* BLOCCA lo scorrimento orizzontale causato dai fiori fuori schermo */
             overflow-y: hidden;
+            /* nasconde lo scroll verticale */
             height: 100vh;
+            /* altezza = 100% della finestra visibile */
             font-family: sans-serif;
+            /* un font più pulito e moderno per i testi */
         }
 
+        /* Ottimizzazione testi per renderli grandi e centrati su mobile e PC */
         h1 {
             font-size: 7vw;
+            /* Il testo si adatta alla larghezza dello schermo dello smartphone */
             margin: 10px 0;
             color: #333;
         }
@@ -38,6 +45,7 @@
             color: #777;
         }
 
+        /* Limite per schermi molto grandi (PC), altrimenti i testi diventerebbero giganti */
         @media (min-width: 768px) {
             h1 {
                 font-size: 40px;
@@ -52,28 +60,40 @@
             }
         }
 
+        /* . = classe → si applica a tutti i fiori */
         .fiore {
             position: absolute;
+            /* posizione libera */
             bottom: 20px;
+            /* 20px dal fondo */
             width: 65px;
+            /* Proporzione perfetta su mobile */
             user-select: none;
+            /* non selezionabile */
         }
 
+        /* # = ID → elemento unico (il gatto) */
         #gatto-fisso {
             position: absolute;
             bottom: 15px;
             left: 50%;
+            /* centro orizzontale */
             transform: translateX(-50%);
+            /* correzione per centratura perfetta */
             width: 140px;
+            /* Proporzione perfetta per smartphone */
             z-index: 1000;
+            /* Il gatto è sempre in primo piano rispetto ai fiori */
         }
 
+        /* Un piccolo tocco estetico: l'erba */
         #pavimento {
             position: absolute;
             bottom: 0;
             width: 100%;
             height: 40px;
             background-color: #2ecc71;
+            /* Verde prato */
         }
     </style>
 
@@ -82,28 +102,45 @@
         const GattoImg = "ga_0.gif";
 
         function Start() {
+            // 1. Creiamo il gatto al centro dello schermo
             let gatto = document.createElement("img");
             gatto.src = GattoImg;
             gatto.id = "gatto-fisso";
             document.body.appendChild(gatto);
 
+            // 2. TRUCCO: Creiamo subito 15 fiori posizionati già DENTRO lo schermo all'avvio
+            for (let i = 0; i < 15; i++) {
+                let giaDentroSchermo = true;
+                creaSingoloFiore(giaDentroSchermo);
+            }
+
+            // 3. Facciamo partire il ciclo infinito di nascita dei fiori da destra
             generaCicloFiori();
         }
 
         function generaCicloFiori() {
-            creaSingoloFiore();
+            // Qui i nuovi fiori nascono normalmente da fuori schermo (false)
+            creaSingoloFiore(false);
             let attesa = Math.random() * 100 + 50;
             setTimeout(generaCicloFiori, attesa);
         }
 
-        function creaSingoloFiore() {
+        // Gestione del singolo fiore (può nascere dentro lo schermo o fuori a destra)
+        function creaSingoloFiore(iniziale) {
             let f = document.createElement("img");
             let indice = Math.floor(Math.random() * FioriDisponibili.length);
             f.src = FioriDisponibili[indice];
             f.className = "fiore";
             document.body.appendChild(f);
 
-            let posX = window.innerWidth + 100;
+            // Se iniziale = true, lo spargiamo casualmente sullo schermo. Altrimenti parte da destra (+100)
+            let posX;
+            if (iniziale) {
+                posX = Math.random() * window.innerWidth;
+            } else {
+                posX = window.innerWidth + 100;
+            }
+
             let velocita = 1 + Math.random() * 2;
 
             function muoviti() {
@@ -113,7 +150,7 @@
                 if (posX > -150) {
                     requestAnimationFrame(muoviti);
                 } else {
-                    f.remove();
+                    f.remove(); // Quando esce a sinistra si cancella per non intasare la memoria
                 }
             }
 
