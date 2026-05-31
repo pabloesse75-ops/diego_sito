@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <title>Sfriso Diego</title>
 
+    <!-- Questo tag risolve lo zoom piccolo sul telefono -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
 
     <style>
@@ -16,7 +17,7 @@
             margin: 0;
             /* rimuove il margine automatico del browser */
             overflow-x: hidden;
-            /* BLOCCA lo scorrimento orizzontale causato dai fiori fuori schermo */
+            /* BLOCCA lo scorrimento orizzontale */
             overflow-y: hidden;
             /* nasconde lo scroll verticale */
             height: 100vh;
@@ -101,6 +102,9 @@
         const FioriDisponibili = ["fi_0.gif", "fi_1.gif", "fi_2.gif", "fi_3.gif", "fi_4.gif", "fi_5.gif", "fi_6.gif", "fi_7.gif", "fi_8.gif", "fi_9.gif", "fi_10.gif", "fi_11.gif"];
         const GattoImg = "ga_0.gif";
 
+        // Scegliamo quanti fiori vogliamo fissi sullo schermo (es. 20)
+        const TOTALE_FIORI = 50;
+
         function Start() {
             // 1. Creiamo il gatto al centro dello schermo
             let gatto = document.createElement("img");
@@ -108,49 +112,45 @@
             gatto.id = "gatto-fisso";
             document.body.appendChild(gatto);
 
-            // 2. TRUCCO: Creiamo subito 15 fiori posizionati già DENTRO lo schermo all'avvio
-            for (let i = 0; i < 15; i++) {
-                let giaDentroSchermo = true;
-                creaSingoloFiore(giaDentroSchermo);
+            // 2. Creiamo il blocco di fiori fisso. 
+            // All'inizio li spargiamo su tutta la larghezza dello schermo.
+            for (let i = 0; i < TOTALE_FIORI; i++) {
+                let xIniziale = Math.random() * window.innerWidth;
+                creaFioreContinuo(xIniziale);
+            }
+        }
+
+        function creaFioreContinuo(posizioneXIniziale) {
+            let f = document.createElement("img");
+
+            // Funzione interna per dare un aspetto e una velocità casuale al fiore
+            function resettaFiore(elemento) {
+                let indice = Math.floor(Math.random() * FioriDisponibili.length);
+                elemento.src = FioriDisponibili[indice];
+                elemento.className = "fiore";
             }
 
-            // 3. Facciamo partire il ciclo infinito di nascita dei fiori da destra
-            generaCicloFiori();
-        }
-
-        function generaCicloFiori() {
-            // Qui i nuovi fiori nascono normalmente da fuori schermo (false)
-            creaSingoloFiore(false);
-            let attesa = Math.random() * 100 + 50;
-            setTimeout(generaCicloFiori, attesa);
-        }
-
-        // Gestione del singolo fiore (può nascere dentro lo schermo o fuori a destra)
-        function creaSingoloFiore(iniziale) {
-            let f = document.createElement("img");
-            let indice = Math.floor(Math.random() * FioriDisponibili.length);
-            f.src = FioriDisponibili[indice];
-            f.className = "fiore";
+            resettaFiore(f);
             document.body.appendChild(f);
 
-            // Se iniziale = true, lo spargiamo casualmente sullo schermo. Altrimenti parte da destra (+100)
-            let posX;
-            if (iniziale) {
-                posX = Math.random() * window.innerWidth;
-            } else {
-                posX = window.innerWidth + 100;
-            }
-
-            let velocita = 1 + Math.random() * 2;
+            let posX = posizioneXIniziale;
+            let velocita = 0.8 + Math.random() * 1.5;
 
             function muoviti() {
                 posX -= velocita;
                 f.style.left = posX + "px";
 
                 if (posX > -150) {
+                    // Se è ancora visibile continuiamo a muoverlo
                     requestAnimationFrame(muoviti);
                 } else {
-                    f.remove(); // Quando esce a sinistra si cancella per non intasare la memoria
+                    // NOVITÀ: Invece di eliminarlo, lo rimandiamo a destra fuori schermo!
+                    posX = window.innerWidth + 50;
+                    // Gli cambiamo aspetto e velocità così sembra un fiore nuovo
+                    velocita = 0.8 + Math.random() * 1.5;
+                    resettaFiore(f);
+                    // Ricomincia il giro
+                    requestAnimationFrame(muoviti);
                 }
             }
 
