@@ -1,5 +1,6 @@
-<!-- ATTENZIONE PROPRIETA' PRIVATA DI SFRISO PAOLO -->
 
+<!-- ATTENZIONE PROPRIETA' PRIVATA DI SFRISO PAOLO -->
+ 
 <!doctype html>
 <html lang="it">
 
@@ -45,7 +46,21 @@
             color: #777;
         }
 
-        /* Limite per schermi molto grandi (PC), altrimenti i testi diventerebbero giganti */
+        /* Stile specifico per la data e l'ora */
+        #data-ora {
+            font-size: 4.5vw;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #2c3e50;
+            background-color: rgba(255, 255, 255, 0.4);
+            /* Un leggero sfondo semitrasparente per leggerlo meglio */
+            padding: 10px 20px;
+            border-radius: 15px;
+            display: inline-block;
+            line-height: 1.4;
+            /* Dona un po' di respiro tra la data e l'ora a capo */
+        }
+
         @media (min-width: 768px) {
             h1 {
                 font-size: 40px;
@@ -58,14 +73,16 @@
             h3 {
                 font-size: 18px;
             }
+
+            #data-ora {
+                font-size: 20px;
+            }
         }
 
         /* . = classe → si applica a tutti i fiori */
         .fiore {
             position: absolute;
             /* posizione libera */
-            bottom: 20px;
-            /* 20px dal fondo */
             width: 65px;
             /* Proporzione perfetta su mobile */
             user-select: none;
@@ -101,9 +118,8 @@
         const FioriDisponibili = ["fi_0.gif", "fi_1.gif", "fi_2.gif", "fi_3.gif", "fi_4.gif", "fi_5.gif", "fi_6.gif", "fi_7.gif", "fi_8.gif", "fi_9.gif", "fi_10.gif", "fi_11.gif"];
         const GattoImg = "ga_0.gif";
 
-        // MODIFICA QUI: Ho alzato a 45 per rendere il prato molto più fitto e folto!
-        // Se lo vuoi ancora più pieno puoi mettere 55 o 60.
-        const TOTALE_FIORI = 50;
+        // MODIFICA: Alzato a 65 per un effetto prato ricchissimo e super fiorito!
+        const TOTALE_FIORI = 65;
 
         function Start() {
             // 1. Creiamo il gatto al centro dello schermo
@@ -112,11 +128,30 @@
             gatto.id = "gatto-fisso";
             document.body.appendChild(gatto);
 
-            // 2. Creiamo il blocco di fiori fisso spargendolo su tutta la larghezza dello schermo.
+            // 2. Distribuzione scaglionata all'avvio dei fiori
             for (let i = 0; i < TOTALE_FIORI; i++) {
-                let xIniziale = Math.random() * window.innerWidth;
+                // Li distribuiamo lungo lo schermo e anche oltre a destra, per un flusso continuo
+                let xIniziale = Math.random() * (window.innerWidth + 1000);
                 creaFioreContinuo(xIniziale);
             }
+
+            // 3. Facciamo partire l'orologio in tempo reale
+            aggiornaDataOra();
+            setInterval(aggiornaDataOra, 1000);
+        }
+
+        function aggiornaDataOra() {
+            const adesso = new Date();
+            const opzioniData = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            let dataFormattata = adesso.toLocaleDateString('it-IT', opzioniData);
+            dataFormattata = dataFormattata.charAt(0).toUpperCase() + dataFormattata.slice(1);
+
+            const ore = String(adesso.getHours()).padStart(2, '0');
+            const minuti = String(adesso.getMinutes()).padStart(2, '0');
+            const secondi = String(adesso.getSeconds()).padStart(2, '0');
+            const oraFormattata = "Ora: " + ore + ":" + minuti + ":" + secondi;
+
+            document.getElementById('data-ora').innerHTML = dataFormattata + "<br>" + oraFormattata;
         }
 
         function creaFioreContinuo(posizioneXIniziale) {
@@ -126,25 +161,32 @@
                 let indice = Math.floor(Math.random() * FioriDisponibili.length);
                 elemento.src = FioriDisponibili[indice];
                 elemento.className = "fiore";
+
+                // TRUCCO TRIDIMENSIONALE: Ogni fiore si posiziona a un'altezza leggermente diversa sull'erba (tra 10px e 35px dal fondo)
+                let altezzaCasuale = 10 + Math.floor(Math.random() * 25);
+                elemento.style.bottom = altezzaCasuale + "px";
+
+                // Mettiamo i fiori più in basso davanti a quelli più in alto (ordine visivo naturale)
+                elemento.style.zIndex = 100 - altezzaCasuale;
             }
 
             resettaFiore(f);
             document.body.appendChild(f);
 
             let posX = posizioneXIniziale;
-            let velocita = 0.8 + Math.random() * 1.5;
+            // Velocità leggermente diverse per non farli muovere a blocchi rigidi
+            let velocita = 0.6 + Math.random() * 1.2;
 
             function muoviti() {
                 posX -= velocita;
                 f.style.left = posX + "px";
 
-                if (posX > -150) {
+                if (posX > -100) {
                     requestAnimationFrame(muoviti);
                 } else {
-                    // Quando esce a sinistra, rinasce a destra ma con un distanziamento casuale
-                    // così i fiori si mescolano meglio e non tornano in fila indiana
-                    posX = window.innerWidth + Math.random() * 200;
-                    velocita = 0.8 + Math.random() * 1.5;
+                    // Quando esce, rinasce in una coda flessibile a destra fuori schermo
+                    posX = window.innerWidth + Math.random() * 100;
+                    velocita = 0.6 + Math.random() * 1.2;
                     resettaFiore(f);
                     requestAnimationFrame(muoviti);
                 }
@@ -163,6 +205,8 @@
             <h1>SFRISO EVA</h1>
             <h2>Via Dante, 78A</h2>
             <h3>Mirano (VE) Italy</h3>
+
+            <div id="data-ora">Caricamento data...</div>
         </div>
     </center>
 
