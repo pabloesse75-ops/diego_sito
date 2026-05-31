@@ -7,7 +7,6 @@
     <meta charset="utf-8">
     <title>Sfriso Diego</title>
 
-    <!-- Questo tag risolve lo zoom piccolo sul telefono -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
 
     <style>
@@ -102,7 +101,8 @@
         const FioriDisponibili = ["fi_0.gif", "fi_1.gif", "fi_2.gif", "fi_3.gif", "fi_4.gif", "fi_5.gif", "fi_6.gif", "fi_7.gif", "fi_8.gif", "fi_9.gif", "fi_10.gif", "fi_11.gif"];
         const GattoImg = "ga_0.gif";
 
-        // Scegliamo quanti fiori vogliamo fissi sullo schermo (es. 20)
+        // MODIFICA QUI: Ho alzato a 45 per rendere il prato molto più fitto e folto!
+        // Se lo vuoi ancora più pieno puoi mettere 55 o 60.
         const TOTALE_FIORI = 50;
 
         function Start() {
@@ -112,8 +112,7 @@
             gatto.id = "gatto-fisso";
             document.body.appendChild(gatto);
 
-            // 2. Creiamo il blocco di fiori fisso. 
-            // All'inizio li spargiamo su tutta la larghezza dello schermo.
+            // 2. Creiamo il blocco di fiori fisso spargendolo su tutta la larghezza dello schermo.
             for (let i = 0; i < TOTALE_FIORI; i++) {
                 let xIniziale = Math.random() * window.innerWidth;
                 creaFioreContinuo(xIniziale);
@@ -123,7 +122,6 @@
         function creaFioreContinuo(posizioneXIniziale) {
             let f = document.createElement("img");
 
-            // Funzione interna per dare un aspetto e una velocità casuale al fiore
             function resettaFiore(elemento) {
                 let indice = Math.floor(Math.random() * FioriDisponibili.length);
                 elemento.src = FioriDisponibili[indice];
@@ -141,15 +139,13 @@
                 f.style.left = posX + "px";
 
                 if (posX > -150) {
-                    // Se è ancora visibile continuiamo a muoverlo
                     requestAnimationFrame(muoviti);
                 } else {
-                    // NOVITÀ: Invece di eliminarlo, lo rimandiamo a destra fuori schermo!
-                    posX = window.innerWidth + 50;
-                    // Gli cambiamo aspetto e velocità così sembra un fiore nuovo
+                    // Quando esce a sinistra, rinasce a destra ma con un distanziamento casuale
+                    // così i fiori si mescolano meglio e non tornano in fila indiana
+                    posX = window.innerWidth + Math.random() * 200;
                     velocita = 0.8 + Math.random() * 1.5;
                     resettaFiore(f);
-                    // Ricomincia il giro
                     requestAnimationFrame(muoviti);
                 }
             }
